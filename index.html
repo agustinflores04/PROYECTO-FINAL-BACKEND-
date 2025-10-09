@@ -11,40 +11,315 @@
 <body>
   <header> 
     <h1>El Nexo Digital</h1>
-    <h4>Aquí podras contar con una comunidad inmensa de opinologos sobre videojuegos, anime, peliculas y series, y otras cositas. Además, podrás crear tu propia biblioteca y ayudar a los demas puntuando tus juegos y metrajes favoritos!</h4>
+    <h4>Aquí podrás contar con una comunidad inmensa de opinólogos sobre videojuegos, anime, películas y series, y otras cositas. Además, podrás crear tu propia biblioteca y ayudar a los demas puntuando tus juegos y metrajes favoritos!.</h4>
   </header>
+
   <nav>
     <ul>
       <li><a href="#Videojuegos">Videojuegos</a></li>
       <li><a href="#Anime">Anime</a></li>
-      <li><a href="#Peliculas">Peliculas</a></li>
+      <li><a href="#Peliculas">Películas</a></li>
       <li><a href="#Series">Series</a></li>
+      <li><a href="#Biblioteca">Mi Biblioteca</a></li>
     </ul>
   </nav>
+
   <main>
-    <section>
-      <h2 id="Videojuegos">Videojuegos</h2>
-      <p>En esta sección podrás encontrar opiniones sobre videojuegos, reseñas, recomendaciones y más. </p>
+    <!-- SECCIÓN VIDEOJUEGOS -->
+    <section id="Videojuegos">
+      <h2>🎮 Videojuegos</h2>
+      <p>Descubre las mejores reseñas de videojuegos de la comunidad. Vota, comenta y comparte tu opinión.</p>
+      
+      <!-- Grid de tarjetas de videojuegos -->
+      <div class="cards-grid">
+        <article class="card">
+          <div class="card-image">
+            <img src="./img/eldenringg.jpg" alt="Elden Ring">
+            <span class="card-category">RPG</span>
+          </div>
+          <div class="card-content">
+            <h3>Elden Ring</h3>
+            <div class="rating">
+              <span class="stars">★★★★★</span>
+              <span class="rating-number">4.8/5</span>
+            </div>
+            <p class="card-description">Una obra maestra del género souls-like con un mundo abierto impresionante.</p>
+            <div class="card-stats">
+              <span>👥 1,234 reseñas</span>
+              <span>💬 567 comentarios</span>
+            </div>
+            <button class="btn btn-primary">Ver Reseñas</button>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-image">
+            <img src="./img/tw.jpg" alt="The Witcher 3">
+            <span class="card-category">RPG</span>
+          </div>
+          <div class="card-content">
+            <h3>The Witcher 3</h3>
+            <div class="rating">
+              <span class="stars">★★★★★</span>
+              <span class="rating-number">4.9/5</span>
+            </div>
+            <p class="card-description">Historia épica con decisiones que importan y un mundo rico en detalles.</p>
+            <div class="card-stats">
+              <span>👥 2,891 reseñas</span>
+              <span>💬 1,203 comentarios</span>
+            </div>
+            <button class="btn btn-primary">Ver Reseñas</button>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-image">
+            <img src="./img/hk.jpg" alt="Hollow Knight">
+            <span class="card-category">Metroidvania</span>
+          </div>
+          <div class="card-content">
+            <h3>Hollow Knight</h3>
+            <div class="rating">
+              <span class="stars">★★★★☆</span>
+              <span class="rating-number">4.7/5</span>
+            </div>
+            <p class="card-description">Metroidvania desafiante con un arte hermoso y atmósfera única.</p>
+            <div class="card-stats">
+              <span>👥 856 reseñas</span>
+              <span>💬 432 comentarios</span>
+            </div>
+            <button class="btn btn-primary">Ver Reseñas</button>
+          </div>
+        </article>
+      </div>
+
+      <!-- Formulario para agregar reseña -->
+      <div class="review-form-container">
+        <h3>✍️ Agregar Nueva Reseña</h3>
+        <form class="review-form">
+          <div class="form-group">
+            <label for="game-name">Nombre del Videojuego:</label>
+            <input type="text" id="game-name" name="game-name" placeholder="Ej: The Last of Us" required>
+          </div>
+
+          <div class="form-group">
+            <label for="game-category">Categoría:</label>
+            <select id="game-category" name="game-category" required>
+              <option value="">Selecciona una categoría</option>
+              <option value="rpg">RPG</option>
+              <option value="accion">Acción</option>
+              <option value="aventura">Aventura</option>
+              <option value="estrategia">Estrategia</option>
+              <option value="deportes">Deportes</option>
+              <option value="terror">Terror</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Tu Puntuación:</label>
+            <div class="star-rating">
+              <input type="radio" id="star5" name="rating" value="5">
+              <label for="star5">★</label>
+              <input type="radio" id="star4" name="rating" value="4">
+              <label for="star4">★</label>
+              <input type="radio" id="star3" name="rating" value="3">
+              <label for="star3">★</label>
+              <input type="radio" id="star2" name="rating" value="2">
+              <label for="star2">★</label>
+              <input type="radio" id="star1" name="rating" value="1">
+              <label for="star1">★</label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="review-text">Tu Reseña:</label>
+            <textarea id="review-text" name="review-text" rows="5" placeholder="Comparte tu opinión sobre el juego..." required></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-submit">Publicar Reseña</button>
+        </form>
+      </div>
     </section>
-    <section>
-      <h2 id="Anime">Anime</h2>
-      <p>En esta sección podrás encontrar opiniones sobre anime, reseñas, recomendaciones y más.</p>
+
+    <!-- SECCIÓN ANIME -->
+    <section id="Anime">
+      <h2>🎌 Anime</h2>
+      <p>Las mejores series de anime votadas por la comunidad. Descubre nuevos títulos y comparte tus favoritos.</p>
+      
+      <div class="cards-grid">
+        <article class="card">
+          <div class="card-image">
+            <img src="./img/aot.jpg" alt="Attack on Titan">
+            <span class="card-category">Acción</span>
+          </div>
+          <div class="card-content">
+            <h3>Attack on Titan</h3>
+            <div class="rating">
+              <span class="stars">★★★★★</span>
+              <span class="rating-number">4.9/5</span>
+            </div>
+            <p class="card-description">Una historia épica de supervivencia con giros impactantes.</p>
+            <div class="card-stats">
+              <span>👥 3,421 reseñas</span>
+              <span>💬 2,108 comentarios</span>
+            </div>
+            <button class="btn btn-primary">Ver Reseñas</button>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-image">
+            <img src="img/ds.jpg" alt="Demon Slayer">
+            <span class="card-category">Aventura</span>
+          </div>
+          <div class="card-content">
+            <h3>Demon Slayer</h3>
+            <div class="rating">
+              <span class="stars">★★★★★</span>
+              <span class="rating-number">4.8/5</span>
+            </div>
+            <p class="card-description">Animación espectacular y una historia conmovedora.</p>
+            <div class="card-stats">
+              <span>👥 2,876 reseñas</span>
+              <span>💬 1,543 comentarios</span>
+            </div>
+            <button class="btn btn-primary">Ver Reseñas</button>
+          </div>
+        </article>
+      </div>
     </section>
-    <section>
-      <h2 id="Peliculas">Películas</h2>
-      <p>En esta sección podrás encontrar opiniones sobre peliculas, reseñas, recomendaciones y más. .</p>
+
+    <!-- SECCIÓN PELÍCULAS -->
+    <section id="Peliculas">
+      <h2>🎬 Películas</h2>
+      <p>Reseñas de las mejores películas. Desde clásicos hasta estrenos, encuentra tu próxima película favorita.</p>
+      
+      <div class="cards-grid">
+        <article class="card">
+          <div class="card-image">
+            <img src="./img/inception.jpg" alt="Inception">
+            <span class="card-category">Ciencia Ficción</span>
+          </div>
+          <div class="card-content">
+            <h3>Inception</h3>
+            <div class="rating">
+              <span class="stars">★★★★★</span>
+              <span class="rating-number">4.8/5</span>
+            </div>
+            <p class="card-description">Un thriller mental que desafía la percepción de la realidad.</p>
+            <div class="card-stats">
+              <span>👥 4,521 reseñas</span>
+              <span>💬 2,893 comentarios</span>
+            </div>
+            <button class="btn btn-primary">Ver Reseñas</button>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-image">
+            <img src="./img/misionimp.jpg" alt="Misión imposible">
+            <span class="card-category">Acción</span>
+          </div>
+          <div class="card-content">
+            <h3>Misión imposible</h3>
+            <div class="rating">
+              <span class="stars">★★★★★</span>
+              <span class="rating-number">4.9/5</span>
+            </div>
+            <p class="card-description">Una acción épica con giros impactantes.</p>
+            <div class="card-stats">
+              <span>👥 8,521 reseñas</span>
+              <span>💬 1,893 comentarios</span>
+            </div>
+            <button class="btn btn-primary">Ver Reseñas</button>
+          </div>
+        </article>
+      </div>
     </section>
-    <section>
-      <h2 id="Series">Series</h2>
-      <p>En esta sección podrás encontrar opiniones sobre series, reseñas, recomendaciones y más.</p>
-</section>
-<section>
-  <h2>Mi biblioteca personal.</h2>
-</section>
-</main>
-<footer>
-  <p>Creado por Agustín Flores para Sofka Technologies // Programa "Jóvenes Creativos" 2025 Paysandú, Uruguay.</p>
-  <p>El Nexo Digital &copy; 2025</p>
-</footer>
+
+    <!-- SECCIÓN SERIES -->
+    <section id="Series">
+      <h2>📺 Series</h2>
+      <p>Las series más comentadas y mejor valoradas por nuestra comunidad.</p>
+      
+      <div class="cards-grid">
+        <article class="card">
+          <div class="card-image">
+            <img src="./img/Breaking-Bad.jpg" alt="Breaking Bad">
+            <span class="card-category">Drama</span>
+          </div>
+          <div class="card-content">
+            <h3>Breaking Bad</h3>
+            <div class="rating">
+              <span class="stars">★★★★★</span>
+              <span class="rating-number">5.0/5</span>
+            </div>
+            <p class="card-description">Una obra maestra del drama televisivo con actuaciones perfectas.</p>
+            <div class="card-stats">
+              <span>👥 5,234 reseñas</span>
+              <span>💬 3,421 comentarios</span>
+            </div>
+            <button class="btn btn-primary">Ver Reseñas</button>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-image">
+            <img src="./img/reacher.jpg" alt="Reacher">
+            <span class="card-category">Acción/Drama</span>
+          </div>
+          <div class="card-content">
+            <h3>Reacher</h3>
+            <div class="rating">
+              <span class="stars">★★★★★</span>
+              <span class="rating-number">5.0/5</span>
+            </div>
+            <p class="card-description">Basada en los libros de Jack Reacher, Reacher es una serie de drama y acción que sigue la historia de un detective que se embarca en una búsqueda para encontrar a su hermano, el cual ha sido asesinado. A lo largo de la serie, se presentan desafíos emocionales y personales que requieren de la resolución de problemas.</p>
+            <div class="card-stats">
+              <span>👥 10,234 reseñas</span>
+              <span>💬 6,421 comentarios</span>
+            </div>
+            <button class="btn btn-primary">Ver Reseñas</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- BIBLIOTECA PERSONAL -->
+    <section id="Biblioteca">
+      <h2>📚 Mi Biblioteca Personal</h2>
+      <p>Guarda y organiza tus videojuegos, animes, películas y series favoritas en un solo lugar.</p>
+      
+      <div class="biblioteca-stats">
+        <div class="stat-card">
+          <div class="stat-number">24</div>
+          <div class="stat-label">Videojuegos</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">15</div>
+          <div class="stat-label">Animes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">38</div>
+          <div class="stat-label">Películas</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">12</div>
+          <div class="stat-label">Series</div>
+        </div>
+      </div>
+
+      <div class="biblioteca-actions">
+        <button class="btn btn-primary">+ Agregar a Biblioteca</button>
+        <button class="btn btn-secondary">Ver Todo</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Creado por Agustín Flores para Sofka Technologies // Programa "Jóvenes Creativos" 2025 Paysandú, Uruguay.</p>
+    <p>El Nexo Digital &copy; 2025</p>
+  </footer>
+  <script src="./index.js"></script>
 </body>
 </html>
