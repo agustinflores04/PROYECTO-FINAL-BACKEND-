@@ -20,6 +20,99 @@ let database = {
 let usuarioActual = null;
 
 // ============================================
+// FUNCIONES DE ALMACENAMIENTO PERSISTENTE
+// ============================================
+
+// Verificar si el almacenamiento está disponible
+function storageDisponible() {
+  return typeof window !== 'undefined' && window.storage;
+}
+
+// Cargar reseñas desde el almacenamiento (compartido)
+async function cargarReseñas() {
+  if (!storageDisponible()) {
+    console.log('⚠️ Almacenamiento no disponible');
+    return;
+  }
+  
+  try {
+    const result = await window.storage.get('reseñas-compartidas', true);
+    if (result && result.value) {
+      database.reseñas = JSON.parse(result.value);
+      console.log('✅ Reseñas cargadas:', database.reseñas.length);
+    }
+  } catch (error) {
+    console.log('ℹ️ No hay reseñas previas');
+    database.reseñas = [];
+  }
+}
+
+// Guardar reseñas en el almacenamiento (compartido)
+async function guardarReseñas() {
+  if (!storageDisponible()) {
+    console.log('⚠️ Almacenamiento no disponible');
+    return false;
+  }
+  
+  try {
+    const result = await window.storage.set('reseñas-compartidas', JSON.stringify(database.reseñas), true);
+    if (result) {
+      console.log('✅ Reseñas guardadas exitosamente');
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error('❌ Error al guardar reseñas:', error);
+    return false;
+  }
+}
+
+// Cargar biblioteca personal desde el almacenamiento (personal)
+async function cargarBiblioteca() {
+  if (!storageDisponible()) {
+    console.log('⚠️ Almacenamiento no disponible');
+    return;
+  }
+  
+  try {
+    const result = await window.storage.get('mi-biblioteca', false);
+    if (result && result.value) {
+      database.biblioteca = JSON.parse(result.value);
+      console.log('✅ Biblioteca cargada');
+      actualizarEstadisticasBiblioteca();
+    }
+  } catch (error) {
+    console.log('ℹ️ No hay biblioteca previa');
+    database.biblioteca = {
+      videojuegos: [],
+      anime: [],
+      peliculas: [],
+      series: []
+    };
+  }
+}
+
+// Guardar biblioteca personal en el almacenamiento (personal)
+async function guardarBiblioteca() {
+  if (!storageDisponible()) {
+    console.log('⚠️ Almacenamiento no disponible');
+    return false;
+  }
+  
+  try {
+    const result = await window.storage.set('mi-biblioteca', JSON.stringify(database.biblioteca), false);
+    if (result) {
+      console.log('✅ Biblioteca guardada exitosamente');
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error('❌ Error al guardar biblioteca:', error);
+    return false;
+  }
+}
+
+// ============================================
 // FUNCIONES DE INICIO
 // ============================================
 
@@ -27,12 +120,18 @@ document.addEventListener('DOMContentLoaded', function() {
   inicializarApp();
 });
 
-function inicializarApp() {
+async function inicializarApp() {
+  // Cargar datos guardados sin mostrar notificación
+  await cargarReseñas();
+  await cargarBiblioteca();
+
   // Inicializar eventos del formulario de reseñas
-  const formReseña = document.querySelector('.review-form');
-  if (formReseña) {
-    formReseña.addEventListener('submit', manejarEnvioReseña);
-  }
+  const formsReseña = document.querySelectorAll('.review-form');
+  formsReseña.forEach((form, index) => {
+    // Hacer únicos los IDs de cada formulario
+    hacerIDsUnicos(form, index);
+    form.addEventListener('submit', manejarEnvioReseña);
+  });
 
   // Inicializar botones "Ver Reseñas"
   const botonesVerReseñas = document.querySelectorAll('.btn-primary');
@@ -54,7 +153,7 @@ function inicializarApp() {
     btnVerTodo.addEventListener('click', mostrarBibliotecaCompleta);
   }
 
-  // desplazamiento suave para navegación
+  // Desplazamiento suave para navegación
   document.querySelectorAll('nav a').forEach(link => {
     link.addEventListener('click', function(e) {
       e.preventDefault();
@@ -69,50 +168,93 @@ function inicializarApp() {
   console.log('🎮 El Nexo Digital iniciado correctamente');
 }
 
+// Hacer únicos los IDs de los formularios para evitar conflictos
+function hacerIDsUnicos(form, index) {
+  const elementos = form.querySelectorAll('[id]');
+  elementos.forEach(elemento => {
+    const idOriginal = elemento.id;
+    const nuevoId = `${idOriginal}-${index}`;
+    elemento.id = nuevoId;
+    
+    // Actualizar los labels que apuntan a este ID
+    const label = form.querySelector(`label[for="${idOriginal}"]`);
+    if (label) {
+      label.setAttribute('for', nuevoId);
+    }
+  });
+  
+  // Actualizar los radio buttons de estrellas
+  const radioButtons = form.querySelectorAll('input[type="radio"]');
+  radioButtons.forEach(radio => {
+    const nameOriginal = radio.name;
+    radio.name = `${nameOriginal}-${index}`;
+  });
+}
+
 // ============================================
 // SISTEMA DE RESEÑAS
 // ============================================
 
-function manejarEnvioReseña(e) {
+async function manejarEnvioReseña(e) {
   e.preventDefault();
   
-  // Obtener valores del formulario
-  const nombreJuego = document.getElementById('game-name').value;
-  const categoria = document.getElementById('game-category').value;
-  const puntuacion = document.querySelector('input[name="rating"]:checked');
-  const textoReseña = document.getElementById('review-text').value;
+  const form = e.target;
+  const seccion = form.closest('section').id;
+  
+  // Obtener valores del formulario usando selectores más flexibles
+  const inputNombre = form.querySelector('input[type="text"]');
+  const selectCategoria = form.querySelector('select');
+  const puntuacion = form.querySelector('input[name^="rating"]:checked');
+  const textoReseña = form.querySelector('textarea');
 
-  // Validar que se haya seleccionado una puntuación
+  // Validar campos
+  if (!inputNombre || !inputNombre.value.trim()) {
+    mostrarNotificacion('⚠️ Por favor ingresa el nombre', 'warning');
+    return;
+  }
+
+  if (!selectCategoria || !selectCategoria.value) {
+    mostrarNotificacion('⚠️ Por favor selecciona una categoría', 'warning');
+    return;
+  }
+
   if (!puntuacion) {
     mostrarNotificacion('⚠️ Por favor selecciona una puntuación', 'warning');
+    return;
+  }
+
+  if (!textoReseña || !textoReseña.value.trim()) {
+    mostrarNotificacion('⚠️ Por favor escribe tu reseña', 'warning');
     return;
   }
 
   // Crear objeto de reseña
   const nuevaReseña = {
     id: Date.now(),
-    nombreJuego: nombreJuego,
-    categoria: categoria,
+    nombreJuego: inputNombre.value.trim(),
+    categoria: selectCategoria.value,
     puntuacion: parseInt(puntuacion.value),
-    texto: textoReseña,
+    texto: textoReseña.value.trim(),
     fecha: new Date().toLocaleDateString('es-ES'),
     autor: usuarioActual ? usuarioActual.nombre : 'Anónimo',
-    likes: 0
+    likes: 0,
+    tipo: seccion
   };
 
   // Guardar en la "base de datos"
   database.reseñas.push(nuevaReseña);
 
-  // Mostrar mensaje de éxito
-  mostrarNotificacion('✅ ¡Reseña publicada exitosamente!', 'success');
+  // Guardar en almacenamiento persistente
+  const guardado = await guardarReseñas();
+  
+  if (guardado) {
+    mostrarNotificacion('✅ ¡Reseña publicada y guardada exitosamente!', 'success');
+  } else {
+    mostrarNotificacion('✅ Reseña publicada (guardado local)', 'success');
+  }
 
   // Limpiar formulario
-  e.target.reset();
-
-  // Resetear estrellas visualmente
-  document.querySelectorAll('.star-rating input[type="radio"]').forEach(input => {
-    input.checked = false;
-  });
+  form.reset();
 
   console.log('Nueva reseña agregada:', nuevaReseña);
   console.log('Total de reseñas:', database.reseñas.length);
@@ -159,7 +301,7 @@ function mostrarModalAgregar() {
     <form id="form-agregar-biblioteca" style="display: flex; flex-direction: column; gap: 1rem;">
       <div>
         <label style="color: #e0e0e0; display: block; margin-bottom: 0.5rem;">Tipo de contenido:</label>
-        <select id="tipo-contenido" style="width: 100%; padding: 0.8rem; background: rgba(15, 52, 96, 0.6); border: 2px solid rgba(233, 69, 96, 0.3); border-radius: 5px; color: #e0e0e0;">
+        <select id="tipo-contenido-modal" style="width: 100%; padding: 0.8rem; background: rgba(15, 52, 96, 0.6); border: 2px solid rgba(233, 69, 96, 0.3); border-radius: 5px; color: #e0e0e0;">
           <option value="videojuegos">Videojuego</option>
           <option value="anime">Anime</option>
           <option value="peliculas">Película</option>
@@ -168,11 +310,15 @@ function mostrarModalAgregar() {
       </div>
       <div>
         <label style="color: #e0e0e0; display: block; margin-bottom: 0.5rem;">Nombre:</label>
-        <input type="text" id="nombre-item" placeholder="Ej: The Witcher 3" style="width: 100%; padding: 0.8rem; background: rgba(15, 52, 96, 0.6); border: 2px solid rgba(233, 69, 96, 0.3); border-radius: 5px; color: #e0e0e0;" required>
+        <input type="text" id="nombre-item-modal" placeholder="Ej: The Witcher 3" style="width: 100%; padding: 0.8rem; background: rgba(15, 52, 96, 0.6); border: 2px solid rgba(233, 69, 96, 0.3); border-radius: 5px; color: #e0e0e0;" required>
+      </div>
+      <div id="campo-horas-modal" style="display: none;">
+        <label style="color: #e0e0e0; display: block; margin-bottom: 0.5rem;">Horas jugadas:</label>
+        <input type="number" id="horas-jugadas-modal" placeholder="Ej: 50" min="0" style="width: 100%; padding: 0.8rem; background: rgba(15, 52, 96, 0.6); border: 2px solid rgba(233, 69, 96, 0.3); border-radius: 5px; color: #e0e0e0;">
       </div>
       <div>
         <label style="color: #e0e0e0; display: block; margin-bottom: 0.5rem;">Estado:</label>
-        <select id="estado-item" style="width: 100%; padding: 0.8rem; background: rgba(15, 52, 96, 0.6); border: 2px solid rgba(233, 69, 96, 0.3); border-radius: 5px; color: #e0e0e0;">
+        <select id="estado-item-modal" style="width: 100%; padding: 0.8rem; background: rgba(15, 52, 96, 0.6); border: 2px solid rgba(233, 69, 96, 0.3); border-radius: 5px; color: #e0e0e0;">
           <option value="completado">Completado</option>
           <option value="jugando">Jugando/Viendo</option>
           <option value="pendiente">Pendiente</option>
@@ -190,7 +336,19 @@ function mostrarModalAgregar() {
   // Manejar el envío del formulario
   setTimeout(() => {
     const form = document.getElementById('form-agregar-biblioteca');
-    if (form) {
+    const tipoSelect = document.getElementById('tipo-contenido-modal');
+    const campoHoras = document.getElementById('campo-horas-modal');
+    
+    if (form && tipoSelect && campoHoras) {
+      // Mostrar/ocultar campo de horas según el tipo
+      tipoSelect.addEventListener('change', function() {
+        if (this.value === 'videojuegos') {
+          campoHoras.style.display = 'block';
+        } else {
+          campoHoras.style.display = 'none';
+        }
+      });
+      
       form.addEventListener('submit', function(e) {
         e.preventDefault();
         agregarABiblioteca();
@@ -199,21 +357,36 @@ function mostrarModalAgregar() {
   }, 100);
 }
 
-function agregarABiblioteca() {
-  const tipo = document.getElementById('tipo-contenido').value;
-  const nombre = document.getElementById('nombre-item').value;
-  const estado = document.getElementById('estado-item').value;
+async function agregarABiblioteca() {
+  const tipo = document.getElementById('tipo-contenido-modal').value;
+  const nombre = document.getElementById('nombre-item-modal').value;
+  const estado = document.getElementById('estado-item-modal').value;
+  const horas = document.getElementById('horas-jugadas-modal')?.value || null;
+
+  if (!nombre.trim()) {
+    mostrarNotificacion('⚠️ Por favor ingresa un nombre', 'warning');
+    return;
+  }
 
   const nuevoItem = {
     id: Date.now(),
-    nombre: nombre,
+    nombre: nombre.trim(),
     estado: estado,
-    fechaAgregado: new Date().toLocaleDateString('es-ES')
+    fechaAgregado: new Date().toLocaleDateString('es-ES'),
+    ...(tipo === 'videojuegos' && horas ? { horasJugadas: parseInt(horas) } : {})
   };
 
   database.biblioteca[tipo].push(nuevoItem);
   
-  mostrarNotificacion(`✅ ${nombre} agregado a tu biblioteca!`, 'success');
+  // Guardar en almacenamiento persistente
+  const guardado = await guardarBiblioteca();
+  
+  if (guardado) {
+    mostrarNotificacion(`✅ ${nombre} agregado y guardado en tu biblioteca!`, 'success');
+  } else {
+    mostrarNotificacion(`✅ ${nombre} agregado a tu biblioteca (guardado local)`, 'success');
+  }
+  
   cerrarModal();
   actualizarEstadisticasBiblioteca();
 
@@ -246,12 +419,16 @@ function mostrarBibliotecaCompleta() {
           'abandonado': '❌'
         };
 
+        const infoHoras = item.horasJugadas ? 
+          `<br><small style="color: #ffd700;">⏱️ ${item.horasJugadas} horas</small>` : '';
+
         contenido += `
           <div style="background: rgba(22, 33, 62, 0.6); padding: 1rem; margin-bottom: 0.8rem; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
             <div>
               <strong style="color: #e0e0e0;">${item.nombre}</strong>
               <br>
               <small style="color: #808080;">Agregado: ${item.fechaAgregado}</small>
+              ${infoHoras}
             </div>
             <span style="font-size: 1.5rem;">${iconoEstado[item.estado]}</span>
           </div>
