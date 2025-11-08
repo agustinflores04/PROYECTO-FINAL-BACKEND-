@@ -36,6 +36,7 @@ const resenaSchema = new mongoose.Schema({
   categoria: { type: String, required: true },
   puntuacion: { type: Number, required: true, min: 1, max: 5 },
   texto: { type: String, required: true },
+  imagenUrl: { type: String, default: 'https://via.placeholder.com/400x250/0f3460/e94560?text=Sin+Imagen' },
   autor: { type: String, default: 'Anónimo' },
   likes: { type: Number, default: 0 },
   tipo: { type: String, required: true }, // Videojuegos, Anime, Peliculas, Series
@@ -214,5 +215,5 @@ app.get('/', (req, res) => {
 // INICIAR SERVIDOR
 // ============================================
 app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en http://localhost:${5000}`);
+  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
 });
