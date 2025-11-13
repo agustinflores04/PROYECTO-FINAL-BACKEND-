@@ -13,6 +13,10 @@ const PORT = process.env.PORT || 5000;
 // ============================================
 // MIDDLEWARES
 // ============================================
+app.use(cors({
+  origin: '*',  // Temporalmente permitir todo
+  credentials: true
+}));
 app.use(cors()); // Permitir peticiones desde el frontend
 app.use(express.json()); // Para procesar JSON
 
