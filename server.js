@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 5000;
 // MIDDLEWARES
 // ============================================
 app.use(cors({
-  origin: '*',  // Temporalmente permitir todo
+  origin: ['https://splendorous-pasca-aef4d2.netlify.app'],
   credentials: true
 }));
 app.use(cors()); // Permitir peticiones desde el frontend
