@@ -14,10 +14,18 @@ const PORT = process.env.PORT || 5000;
 // MIDDLEWARES
 // ============================================
 app.use(cors({
-  origin: ['https://splendorous-pasca-aef4d2.netlify.app'],
-  credentials: true
+  origin: [
+    'http://localhost:5000', 
+    'http://127.0.0.1:5000', 
+    'http://localhost:5500', 
+    'http://127.0.0.1:5500', 
+    'http://localhost:3000',     
+    'http://127.0.0.1:3000'    
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
-app.use(cors()); // Permitir peticiones desde el frontend
 app.use(express.json()); // Para procesar JSON
 
 // ============================================
